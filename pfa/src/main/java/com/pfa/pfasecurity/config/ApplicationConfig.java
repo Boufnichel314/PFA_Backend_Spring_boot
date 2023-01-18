@@ -1,4 +1,5 @@
-package com.boufnichel.pfa.config;
+package com.pfa.pfasecurity.config;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -12,10 +13,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.boufnichel.pfa.user.UserRepository;
+import com.pfa.pfasecurity.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
-
 
 @Configuration
 @RequiredArgsConstructor
@@ -48,4 +48,5 @@ public class ApplicationConfig {
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
+
 }

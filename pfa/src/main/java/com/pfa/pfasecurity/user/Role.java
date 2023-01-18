@@ -1,4 +1,4 @@
-package com.boufnichel.pfa.user;
+package com.pfa.pfasecurity.user;
 
 public enum Role {	  
 	  ENSEIGNANT,

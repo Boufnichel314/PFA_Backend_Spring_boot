@@ -1,12 +1,14 @@
-package com.boufnichel.pfa.auth;
+package com.pfa.pfasecurity.auth;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.boufnichel.pfa.config.JwtService;
-import com.boufnichel.pfa.user.User;
-import com.boufnichel.pfa.user.UserRepository;
+import com.pfa.pfasecurity.config.JwtService;
+import com.pfa.pfasecurity.user.Role;
+import com.pfa.pfasecurity.user.User;
+import com.pfa.pfasecurity.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 

@@ -1,10 +1,10 @@
-package com.boufnichel.pfa;
+package com.pfa.pfasecurity;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class PfaApplicationTests {
+class PfaSecurityApplicationTests {
 
 	@Test
 	void contextLoads() {

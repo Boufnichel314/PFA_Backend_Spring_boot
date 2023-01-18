@@ -1,4 +1,4 @@
-package com.boufnichel.pfa.auth;
+package com.pfa.pfasecurity.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

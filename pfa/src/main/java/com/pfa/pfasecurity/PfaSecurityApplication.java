@@ -1,4 +1,4 @@
-package com.boufnichel.pfa;
+package com.pfa.pfasecurity;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -7,10 +7,10 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication
-public class PfaApplication {
+public class PfaSecurityApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(PfaApplication.class, args);
+		SpringApplication.run(PfaSecurityApplication.class, args);
 	}
 	@Bean
 	public WebMvcConfigurer corsConfigurer() {
@@ -22,6 +22,5 @@ public class PfaApplication {
 			}
 		};
 	}
-	
 
 }
