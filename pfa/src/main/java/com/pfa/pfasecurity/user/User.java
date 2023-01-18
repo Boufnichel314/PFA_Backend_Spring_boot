@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "_user")
+@Entity
 public class User implements UserDetails {
 
   @Id
