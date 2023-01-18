@@ -6,7 +6,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.pfa.pfasecurity.config.JwtService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
