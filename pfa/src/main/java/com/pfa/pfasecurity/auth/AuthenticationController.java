@@ -56,6 +56,13 @@ public class AuthenticationController {
     public List<User> getNotApprovedUsers() {
         return repository.findByApproved(false);
     }
+
+    //delete by id
+    @PostMapping("/users/delete/{id}")
+    public String deleteUser(@PathVariable int id) {
+        repository.deleteById(id);
+        return "User deleted";
+    }
     
   
 }
