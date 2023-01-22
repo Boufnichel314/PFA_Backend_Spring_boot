@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.pfa.pfasecurity.material.MaterialService;
 import com.pfa.pfasecurity.user.Role;
 import com.pfa.pfasecurity.user.User;
 import com.pfa.pfasecurity.user.UserRepository;
@@ -36,6 +37,7 @@ public class AuthenticationController {
   private final AuthenticationService service;
   private final UserRepository repository;
   @Autowired
+	private MaterialService materialService;
   @PostMapping("/register")
   public ResponseEntity<AuthenticationResponse> register(
       @RequestBody RegisterRequest request
@@ -92,7 +94,22 @@ public class AuthenticationController {
         return ResponseEntity.ok(map);
     }
     
-    
+    //////////////////////Materials///////////////////
+    @PostMapping("/image")
+    public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile file,
+                                         @RequestParam("name") String name,
+                                         @RequestParam("description") String description) throws IOException, java.io.IOException {
+        String uploadImage = materialService.uploadImage(file, name, description);
+        return ResponseEntity.status(HttpStatus.OK).body(uploadImage);
+    }
+
+	@GetMapping("/{fileName}")
+	public ResponseEntity<?> downloadImage(@PathVariable String fileName){
+		byte[] imageData=materialService.downloadImage(fileName);
+		return ResponseEntity.status(HttpStatus.OK)
+				.contentType(MediaType.valueOf("image/png"))
+				.body(imageData);
+	}
 
 
 }
