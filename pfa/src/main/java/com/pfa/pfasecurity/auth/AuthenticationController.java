@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.pfa.pfasecurity.material.Material;
 import com.pfa.pfasecurity.material.MaterialService;
 import com.pfa.pfasecurity.user.Role;
 import com.pfa.pfasecurity.user.User;
@@ -110,6 +111,9 @@ public class AuthenticationController {
 				.contentType(MediaType.valueOf("image/png"))
 				.body(imageData);
 	}
-
-
+  ////////// findall materials
+  @GetMapping("/materials")
+  public List<Material> getAllMaterials() {
+      return materialService.getAllMaterialsWithImages();
+  }
 }

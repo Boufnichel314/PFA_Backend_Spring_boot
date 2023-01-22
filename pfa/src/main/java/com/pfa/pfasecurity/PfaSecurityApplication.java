@@ -12,6 +12,7 @@ public class PfaSecurityApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(PfaSecurityApplication.class, args);
 	}
+	
 	@Bean
 	public WebMvcConfigurer corsConfigurer() {
 		return new WebMvcConfigurer() {

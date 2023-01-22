@@ -1,6 +1,7 @@
 package com.pfa.pfasecurity.material;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,4 +29,14 @@ public class MaterialService {
         byte[] images=ImageUtils.decompressImage(dbImageData.get().getImage());
         return images;
     }
+	
+	public List<Material> getAllMaterialsWithImages(){
+	    List<Material> materials = materialrepo.findAll();
+	    for(Material material : materials){
+	        byte[] image = downloadImage(material.getName());
+	        material.setImage(image);
+	    }
+	    return materials;
+	}
+
 }
