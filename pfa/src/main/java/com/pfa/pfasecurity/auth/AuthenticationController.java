@@ -137,4 +137,9 @@ public class AuthenticationController {
       return new ResponseEntity<>("Keyword added", HttpStatus.OK);
   }
   
+  @GetMapping("/search/{keyword}")
+  public List<Material> getMaterialsByKeyword(@PathVariable String keyword) {
+      return materialService.getMaterialsByKeyword(keyword);
+  }
+  
 }
