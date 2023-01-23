@@ -29,6 +29,7 @@ import com.pfa.pfasecurity.user.User;
 import com.pfa.pfasecurity.user.UserRepository;
 
 import io.jsonwebtoken.io.IOException;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -111,9 +112,23 @@ public class AuthenticationController {
 				.contentType(MediaType.valueOf("image/png"))
 				.body(imageData);
 	}
-  ////////// findall materials
+	
   @GetMapping("/materials")
   public List<Material> getAllMaterials() {
       return materialService.getAllMaterialsWithImages();
   }
+  
+  
+  @PutMapping("materials/{id}/reserve")
+  public String reserveMaterial(@PathVariable int id) {
+      try {
+          materialService.reserveMaterial(id);
+          return "Material has been reserved successefally";
+      } catch (EntityNotFoundException ex) {
+          return "There is no material";
+      } catch (IllegalStateException ex) {
+          return "there is an conflit";
+      }
+  }
+  
 }
