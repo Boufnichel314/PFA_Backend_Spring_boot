@@ -131,4 +131,10 @@ public class AuthenticationController {
       }
   }
   
+  @PutMapping("/{id}/keywords")
+  public ResponseEntity<String> addKeyword(@PathVariable int id, @RequestBody String keyword) {
+      materialService.addKeyword(id, keyword);
+      return new ResponseEntity<>("Keyword added", HttpStatus.OK);
+  }
+  
 }
