@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface MaterialRepo extends JpaRepository<Material, Integer> {
-		Optional<Material> findByName(String name);
+		Optional<Material> findByTitre(String name);
 }

@@ -4,9 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.pfa.pfasecurity.material.Image;
-import com.pfa.pfasecurity.material.Material;
-import com.pfa.pfasecurity.material.MaterialRepo;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,6 +20,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pfa.pfasecurity.material.Image;
+import com.pfa.pfasecurity.material.Material;
+import com.pfa.pfasecurity.material.MaterialRepo;
 import com.pfa.pfasecurity.user.Role;
 import com.pfa.pfasecurity.user.User;
 import com.pfa.pfasecurity.user.UserRepository;
@@ -97,7 +98,6 @@ public class AuthenticationController {
         materialRepository.saveAll(materials);
         return ResponseEntity.ok("materielles est ajoutées");
     }
-    
     @GetMapping("/materials/{id}/images")
     public ResponseEntity<List<Image>> getMaterialImages(@PathVariable Integer id) {
         Material material = materialRepository.findById(id).orElse(null);
@@ -107,6 +107,8 @@ public class AuthenticationController {
         List<Image> images = material.getImages();
         return ResponseEntity.ok(images);
     }
+    
+    
 
 
 }
