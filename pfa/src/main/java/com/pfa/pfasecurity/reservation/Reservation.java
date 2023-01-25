@@ -18,6 +18,7 @@ public class Reservation {
     private Integer id;
     private Date dueDate;
     private Date reservationDate;
+    private int quantity;
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
@@ -60,4 +61,11 @@ public class Reservation {
 	public void setMaterial(Material material) {
 		this.material = material;
 	}
+	public int getQuantity() {
+		return quantity;
+	}
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+	
 }
