@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 import java.util.List;
 
+import com.pfa.pfasecurity.reservation.Reservation;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -28,7 +30,10 @@ public class Material {
     private String departement;
     private boolean disponible;
     private String tags;
-    private Date dueDate;
+    //private Date dueDate;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "material")
+    private List<Reservation> reservations;
     private int quantite;
+    
 
 }
