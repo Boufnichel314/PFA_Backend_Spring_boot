@@ -9,4 +9,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface MaterialRepo extends JpaRepository<Material, Integer> {
 		Optional<Material> findByTitre(String name);
+
+		List<Material> findByDisponible(boolean b);
 }
