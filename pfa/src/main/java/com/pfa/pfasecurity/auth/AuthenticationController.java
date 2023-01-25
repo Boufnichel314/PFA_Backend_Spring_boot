@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Map;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -29,6 +31,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pfa.pfasecurity.material.Image;
 import com.pfa.pfasecurity.material.Material;
 import com.pfa.pfasecurity.material.MaterialRepo;
+import com.pfa.pfasecurity.reservation.Reservation;
+import com.pfa.pfasecurity.reservation.ReserveDto;
+import com.pfa.pfasecurity.reservation.reservationRepository;
 import com.pfa.pfasecurity.user.Role;
 import com.pfa.pfasecurity.user.User;
 import com.pfa.pfasecurity.user.UserRepository;
@@ -41,7 +46,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthenticationController {
     private final AuthenticationService service;
     private final UserRepository repository;
-
+    private final reservationRepository reservationRepository;
     private final MaterialRepo materialRepository;
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
@@ -119,42 +124,76 @@ public class AuthenticationController {
         return materialRepository.findAll();
     }
     //switching the boolean !
-    @PostMapping("testing/hh")
-    public void checkDueDate(){
-        List<Material> materials = materialRepository.findAll();
-        for (Material material : materials) {
-            if(material.getDueDate().before(new Date()) && !material.isDisponible()){
-                material.setDisponible(true);
-                System.out.println("testiing" + material.getDueDate());
-                materialRepository.save(material);
-                // additional action like charging user for late return
-            }
-        }
-    }
-    @PutMapping("/{id}/reserved")
-    public ResponseEntity<String> Reserver(@PathVariable Integer id, @RequestBody Map<String, String> requestBody, @RequestBody int qte) {
-        Material material = materialRepository.findById(id).orElse(null);
-        if (material == null) {
-            return ResponseEntity.notFound().build();
-        }
-        try {
-        	if(material.getQuantite() >= qte) {
-            DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-            LocalDateTime dueDate = LocalDateTime.parse(requestBody.get("due_date"), formatter);
-            material.setDueDate(Date.from(dueDate.atZone(ZoneId.systemDefault()).toInstant()));
-            material.setQuantite(material.getQuantite() - qte);
-        	}
-        } catch (DateTimeParseException e) {
-            return ResponseEntity.badRequest().body("Invalid due_date format. Please use ISO-8601 format.");
-        }
-        if(material.getQuantite() == 0)
-        material.setDisponible(false);
-        materialRepository.save(material);
-        return ResponseEntity.ok("Material Reserved");
-    }
-
-
+//    @PostMapping("testing/hh")
+//    public void checkDueDate(){
+//        List<Material> materials = materialRepository.findAll();
+//        for (Material material : materials) {
+//            if(material.getDueDate().before(new Date()) && !material.isDisponible()){
+//                material.setDisponible(true);
+//                System.out.println("testiing" + material.getDueDate());
+//                materialRepository.save(material);
+//                // additional action like charging user for late return
+//            }
+//        }
+//    }
+//    @PutMapping("/{id}/reserved")
+//    public ResponseEntity<String> Reserver(@PathVariable Integer id, @RequestBody Map<String, String> requestBody, @RequestBody int qte) {
+//        Material material = materialRepository.findById(id).orElse(null);
+//        if (material == null) {
+//            return ResponseEntity.notFound().build();
+//        }
+//        try {
+//        	if(material.getQuantite() >= qte) {
+//            DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+//            LocalDateTime dueDate = LocalDateTime.parse(requestBody.get("due_date"), formatter);
+//            material.setDueDate(Date.from(dueDate.atZone(ZoneId.systemDefault()).toInstant()));
+//            material.setQuantite(material.getQuantite() - qte);
+//        	}
+//        } catch (DateTimeParseException e) {
+//            return ResponseEntity.badRequest().body("Invalid due_date format. Please use ISO-8601 format.");
+//        }
+//        if(material.getQuantite() == 0)
+//        material.setDisponible(false);
+//        materialRepository.save(material);
+//        return ResponseEntity.ok("Material Reserved");
+//    }
     
-
+    @PutMapping("/materials/reserve")
+    public ResponseEntity<String> reserveMaterial(@RequestBody ReserveDto reserveDto) {
+        try {
+            Material material = materialRepository.findById(reserveDto.getMaterialId()).orElse(null);
+            User user = repository.findById(reserveDto.getUserId()).orElse(null);
+            if (material == null || user == null) {
+                return ResponseEntity.notFound().build();
+            }
+            if (!material.isDisponible()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Material is already reserved");
+            }
+            if (reserveDto.getQuantity() <= 0) {
+                return ResponseEntity.badRequest().body("Quantity must be greater than 0");
+            }
+            if (reserveDto.getQuantity() > material.getQuantite()) {
+                return ResponseEntity.badRequest().body("Material quantity is not sufficient");
+            }
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new Date());
+            calendar.add(Calendar.DATE, 7); // for example, the reservation will be held for 7 days
+            Date dueDate = calendar.getTime();
+            Reservation reservation = new Reservation();
+            reservation.setDueDate(dueDate);
+            reservation.setReservationDate(new Date());
+            reservation.setMaterial(material);
+            reservation.setUser(user);
+            reservation.setQuantity(reserveDto.getQuantity());
+            reservationRepository.save(reservation);
+            material.setQuantite(material.getQuantite() - reserveDto.getQuantity());
+            if(material.getQuantite() == 0)
+            material.setDisponible(false);
+            materialRepository.save(material);
+            return ResponseEntity.ok("Material Reserved");
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        }
+    }
 
 }
