@@ -1,5 +1,10 @@
 package com.pfa.pfasecurity.auth;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pfa.pfasecurity.material.Image;
@@ -107,7 +113,47 @@ public class AuthenticationController {
         List<Image> images = material.getImages();
         return ResponseEntity.ok(images);
     }
-    
+    //http://localhost:8080/api/v1/auth/GetMaterials
+    @GetMapping("/GetMaterials")
+    public List<Material> getMaterials() {
+        return materialRepository.findAll();
+    }
+    //switching the boolean !
+    @PostMapping("testing/hh")
+    public void checkDueDate(){
+        List<Material> materials = materialRepository.findAll();
+        for (Material material : materials) {
+            if(material.getDueDate().before(new Date()) && !material.isDisponible()){
+                material.setDisponible(true);
+                System.out.println("testiing" + material.getDueDate());
+                materialRepository.save(material);
+                // additional action like charging user for late return
+            }
+        }
+    }
+    @PutMapping("/{id}/reserved")
+    public ResponseEntity<String> Reserver(@PathVariable Integer id, @RequestBody Map<String, String> requestBody, @RequestBody int qte) {
+        Material material = materialRepository.findById(id).orElse(null);
+        if (material == null) {
+            return ResponseEntity.notFound().build();
+        }
+        try {
+        	if(material.getQuantite() >= qte) {
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+            LocalDateTime dueDate = LocalDateTime.parse(requestBody.get("due_date"), formatter);
+            material.setDueDate(Date.from(dueDate.atZone(ZoneId.systemDefault()).toInstant()));
+            material.setQuantite(material.getQuantite() - qte);
+        	}
+        } catch (DateTimeParseException e) {
+            return ResponseEntity.badRequest().body("Invalid due_date format. Please use ISO-8601 format.");
+        }
+        if(material.getQuantite() == 0)
+        material.setDisponible(false);
+        materialRepository.save(material);
+        return ResponseEntity.ok("Material Reserved");
+    }
+
+
     
 
 
