@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -27,5 +28,7 @@ public class Material {
     private String departement;
     private boolean disponible;
     private String tags;
+    private Date dueDate;
+    private int quantite;
 
 }
