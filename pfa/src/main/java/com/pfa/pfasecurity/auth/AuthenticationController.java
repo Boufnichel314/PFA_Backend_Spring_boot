@@ -1,5 +1,6 @@
 package com.pfa.pfasecurity.auth;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -10,7 +11,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pfa.pfasecurity.material.Image;
 import com.pfa.pfasecurity.material.Material;
 import com.pfa.pfasecurity.material.MaterialRepo;
+import com.pfa.pfasecurity.pannier.Pannier;
+import com.pfa.pfasecurity.pannier.PannierDto;
+import com.pfa.pfasecurity.pannier.pannierRepository;
 import com.pfa.pfasecurity.reservation.Reservation;
 import com.pfa.pfasecurity.reservation.ReserveDto;
 import com.pfa.pfasecurity.reservation.reservationRepository;
@@ -49,6 +53,7 @@ public class AuthenticationController {
     private final UserRepository repository;
     private final reservationRepository reservationRepository;
     private final MaterialRepo materialRepository;
+    private final pannierRepository pannierRepository;
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody RegisterRequest request
@@ -104,6 +109,18 @@ public class AuthenticationController {
         map.put("role", user.getRole().name());
         return ResponseEntity.ok(map);
     }
+    //method to change role
+    @PutMapping("/role/{id}")
+    public String changeRole(@PathVariable int id, @RequestBody Role role) {
+    	try {
+        User user = repository.findById(id).orElseThrow();
+        user.setRole(role);
+        repository.save(user);
+        return "Role changed";}
+    	catch (Exception e) {
+			return "hh";
+		}
+    }
 
     @PostMapping("/AddMaterials")
     public ResponseEntity<String> AddMaterials(@RequestBody List<Material> materials){
@@ -143,10 +160,8 @@ public class AuthenticationController {
             if (reserveDto.getQuantity() > material.getQuantite()) {
                 return ResponseEntity.badRequest().body("Material quantity is not sufficient");
             }
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(new Date());
-            calendar.add(Calendar.DATE, 7); // for example, the reservation will be held for 7 days
-            Date dueDate = calendar.getTime();
+            //reserveDto has return_date
+            Date dueDate = new SimpleDateFormat("yyyy-MM-dd").parse(reserveDto.getReturn_date().toString());
             Reservation reservation = new Reservation();
             reservation.setDueDate(dueDate);
             reservation.setReservationDate(new Date());
@@ -185,5 +200,37 @@ public class AuthenticationController {
         materialRepository.save(material);
         return ResponseEntity.ok("Material is available again");
     }
+    
+    /////////////////////////Pannier////////////////////////////
+    @PostMapping("/panniers")
+    public ResponseEntity<Pannier> createPannier(@RequestBody PannierDto pannierDto) {
+        try {
+            User user = repository.findById(pannierDto.getUserId()).orElse(null);
+            if (user == null) {
+            	System.out.println("no users");
+                return null;
+            }
+            Optional<Material> material = materialRepository.findById(pannierDto.getMaterialId());
+            
+            if(material.isEmpty()){
+            	System.out.println("no materials");
+                return null;
+            }
+            Pannier pannier = new Pannier();
+            pannier.setUser(user);
+            List<Material> materialList = new ArrayList<>();
+            materialList.add(material.get());
+            pannier.setMaterials(materialList);
+            
+            Pannier savedPannier = pannierRepository.save(pannier);
+            return ResponseEntity.ok(savedPannier);
+        } catch (Exception ex) {
+            System.out.println("Error saving Pannier"+ ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    
+
 
 }
