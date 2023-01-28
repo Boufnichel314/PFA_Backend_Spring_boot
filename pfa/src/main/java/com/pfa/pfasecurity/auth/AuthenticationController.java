@@ -43,6 +43,7 @@ import com.pfa.pfasecurity.user.Role;
 import com.pfa.pfasecurity.user.User;
 import com.pfa.pfasecurity.user.UserRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -110,18 +111,19 @@ public class AuthenticationController {
         return ResponseEntity.ok(map);
     }
     //method to change role
-    @PutMapping("/role/{id}")
-    public String changeRole(@PathVariable int id, @RequestBody Role role) {
+    @PutMapping("/role/{id}/{newRole}")
+    public String changeRole(@PathVariable int id, @PathVariable Role newRole) {
     	try {
-        User user = repository.findById(id).orElseThrow();
-        user.setRole(role);
-        repository.save(user);
-        return "Role changed";}
-    	catch (Exception e) {
-			return "hh";
-		}
+            User user = repository.findById(id).orElseThrow();
+            user.setRole(newRole);
+            if(user.getRole() == null) return "invalide role !";
+            repository.save(user);
+            return "Role changed";}
+        	catch (Exception e) {
+     			return "hh";
+     		}
     }
-
+    
     @PostMapping("/AddMaterials")
     public ResponseEntity<String> AddMaterials(@RequestBody List<Material> materials){
         materialRepository.saveAll(materials);
@@ -136,13 +138,18 @@ public class AuthenticationController {
         List<Image> images = material.getImages();
         return ResponseEntity.ok(images);
     }
+    //delete material by id
+    @DeleteMapping("/materials/delete/{id}")
+    public String deleteMaterial(@PathVariable int id) {
+        materialRepository.deleteById(id);
+        return "Material deleted";
+    }
     //http://localhost:8080/api/v1/auth/GetMaterials
     @GetMapping("/GetMaterials")
     public List<Material> getMaterials() {
         return materialRepository.findAll();
     }
     //switching the boolean !
-    
     @PutMapping("/materials/reserve")
     public ResponseEntity<String> reserveMaterial(@RequestBody ReserveDto reserveDto) {
         try {
@@ -178,6 +185,13 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
         }
     }
+
+    //delete reservation by id
+    @DeleteMapping("reservations/{id}")
+    public String deleteReservation(@PathVariable int id) {
+    	reservationRepository.deleteById(id);
+    	return "deleted !";
+    }
     
     //reserved materials 
     @GetMapping("/materials/indisponible")
@@ -189,7 +203,8 @@ public class AuthenticationController {
         }
         return ResponseEntity.ok(materialNames);
     }
-    
+     
+    //switch available
     @PutMapping("/materials/available/{id}")
     public ResponseEntity<String> makeMaterialAvailable(@PathVariable Integer id) {
         Material material = materialRepository.findById(id).orElse(null);
@@ -252,6 +267,19 @@ public class AuthenticationController {
         }
     }
 
-
+    //delete panneir by user id
+    @Transactional
+    @DeleteMapping("panneir/delete/{userId}")
+    public String deletePannier(@PathVariable int userId){
+        try {
+            User user = repository.findById(userId).orElse(null);
+            if(user != null)
+            pannierRepository.deleteByUser(user);
+            return "Pannier Deleted !";
+        }
+        catch(Exception e) {
+        	return e.getMessage();
+        }
+    }
 
 }
