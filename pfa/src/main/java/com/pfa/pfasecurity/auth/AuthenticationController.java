@@ -230,7 +230,28 @@ public class AuthenticationController {
         }
     }
 
-    
+    //gett all panniers by user id
+    @GetMapping("/panniers/{userId}")
+    public ResponseEntity<List<Material>> getPannierByUserId(@PathVariable Integer userId) {
+        try {
+            User user = repository.findById(userId).orElse(null);
+            if (user == null) {
+                return ResponseEntity.notFound().build();
+            }
+            List<Pannier> pannier = pannierRepository.findAll();
+            List<Material> materials = new ArrayList<>();
+            for (Pannier p : pannier) {
+                if (p.getUser().getId().equals(userId)) {
+                    materials.addAll(p.getMaterials());
+                }
+            }
+            return ResponseEntity.ok(materials);
+        } catch (Exception ex) {
+            System.out.println("Error retrieving materials for user " + userId + ": " + ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 
 
 }
