@@ -11,4 +11,5 @@ public interface MaterialRepo extends JpaRepository<Material, Integer> {
 		Optional<Material> findByTitre(String name);
 
 		List<Material> findByDisponible(boolean b);
+
 }
