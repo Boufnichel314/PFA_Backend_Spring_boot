@@ -37,6 +37,7 @@ import com.pfa.pfasecurity.pannier.Pannier;
 import com.pfa.pfasecurity.pannier.PannierDto;
 import com.pfa.pfasecurity.pannier.pannierRepository;
 import com.pfa.pfasecurity.reservation.Reservation;
+import com.pfa.pfasecurity.reservation.ReservationDto;
 import com.pfa.pfasecurity.reservation.ReserveDto;
 import com.pfa.pfasecurity.reservation.reservationRepository;
 import com.pfa.pfasecurity.user.Role;
@@ -185,6 +186,8 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
         }
     }
+    
+
 
     //delete reservation by id
     @DeleteMapping("reservations/{id}")
@@ -222,21 +225,27 @@ public class AuthenticationController {
         try {
             User user = repository.findById(pannierDto.getUserId()).orElse(null);
             if (user == null) {
-            	System.out.println("no users");
+                System.out.println("no users");
                 return null;
             }
             Optional<Material> material = materialRepository.findById(pannierDto.getMaterialId());
-            
             if(material.isEmpty()){
-            	System.out.println("no materials");
+                System.out.println("no materials");
                 return null;
+            }
+            List<Pannier> pannierList = pannierRepository.findAllByUser(user);
+            for (Pannier p : pannierList) {
+                if (p.getMaterials().contains(material.get())) {
+                    return ResponseEntity.status(HttpStatus.CONFLICT).build();
+                }
             }
             Pannier pannier = new Pannier();
             pannier.setUser(user);
             List<Material> materialList = new ArrayList<>();
-            materialList.add(material.get());
+
+                materialList.add(material.get());
+
             pannier.setMaterials(materialList);
-            
             Pannier savedPannier = pannierRepository.save(pannier);
             return ResponseEntity.ok(savedPannier);
         } catch (Exception ex) {
@@ -244,6 +253,7 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
 
     //gett all panniers by user id
     @GetMapping("/panniers/{userId}")
