@@ -2,6 +2,7 @@ package com.pfa.pfasecurity.reservation;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pfa.pfasecurity.material.Material;
 import com.pfa.pfasecurity.user.User;
 
@@ -19,9 +20,11 @@ public class Reservation {
     private Date dueDate;
     private Date reservationDate;
     private int quantity;
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "material_id", referencedColumnName = "id")
     private Material material;
