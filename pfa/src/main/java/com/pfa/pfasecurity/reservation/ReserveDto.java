@@ -28,12 +28,12 @@ public class ReserveDto {
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
-	public Date getReturn_date() {
-		return return_date;
-	}
-	public void setReturn_date(Date return_date) {
-		this.return_date = return_date;
-	}
+//	public Date getReturn_date() {
+//		return return_date;
+//	}
+//	public void setReturn_date(Date return_date) {
+//		this.return_date = return_date;
+//	}
     
     
 }
