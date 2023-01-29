@@ -186,7 +186,22 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
         }
     }
-    
+    //All Reservation
+    @GetMapping("/reservations")
+    public ResponseEntity<List<ReservationDto>> getReservations() {
+        List<Reservation> reservations = reservationRepository.findAll();
+        List<ReservationDto> reservationDtos = new ArrayList<>();
+        for (Reservation reservation : reservations) {
+            User user = repository.findById(reservation.getUser().getId()).orElse(null);
+            Material material = materialRepository.findById(reservation.getMaterial().getId()).orElse(null);
+            ReservationDto reservationDto = new ReservationDto();
+            reservationDto.setReservation(reservation);
+            reservationDto.setUser(user);
+            reservationDto.setMaterial(material);
+            reservationDtos.add(reservationDto);
+        }
+        return ResponseEntity.ok(reservationDtos);
+    }
 
 
     //delete reservation by id
