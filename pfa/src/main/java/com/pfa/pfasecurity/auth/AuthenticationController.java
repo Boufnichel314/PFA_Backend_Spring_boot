@@ -130,6 +130,22 @@ public class AuthenticationController {
         materialRepository.saveAll(materials);
         return ResponseEntity.ok("materielles est ajoutées");
     }
+    @PutMapping("/updateMaterial/{id}")
+    public ResponseEntity<String> AddMaterials(@PathVariable Integer id ,@RequestBody Material materials){
+        //find by id
+        Material material = materialRepository.findById(id).orElse(null);
+        if(material == null) {
+            return ResponseEntity.notFound().build();
+        }
+            //titre and images and sku and description and departement of materia
+            material.setTitre(materials.getTitre());
+            material.setImages(materials.getImages());
+            material.setSku(materials.getSku());
+            material.setDescription(materials.getDescription());
+            material.setDepartement(materials.getDepartement());
+            materialRepository.save(material);        
+        return ResponseEntity.ok("materielles est ajoutées");
+    }
     @GetMapping("/materials/{id}/images")
     public ResponseEntity<List<Image>> getMaterialImages(@PathVariable Integer id) {
         Material material = materialRepository.findById(id).orElse(null);
@@ -300,6 +316,28 @@ public class AuthenticationController {
             User user = repository.findById(userId).orElse(null);
             if(user != null)
             pannierRepository.deleteByUser(user);
+            return "Pannier Deleted !";
+        }
+        catch(Exception e) {
+        	return e.getMessage();
+        }
+    }
+    //delete pannier by material id and user id
+    @Transactional
+    @DeleteMapping("panneir/delete/{userId}/{materialId}")
+    public String deletePannier(@PathVariable int userId, @PathVariable int materialId){
+        try {
+            User user = repository.findById(userId).orElse(null);
+            Material material = materialRepository.findById(materialId).orElse(null);
+            if(user == null || material == null)
+                return "User or Material not found !";
+                List<Pannier> panniers = pannierRepository.findAll();
+            for (Pannier p : panniers) {
+                if (p.getMaterials().contains(material) && p.getUser().getId().equals(userId) ) {
+                    p.getMaterials().remove(material);
+                    pannierRepository.save(p);
+                }
+            }
             return "Pannier Deleted !";
         }
         catch(Exception e) {
