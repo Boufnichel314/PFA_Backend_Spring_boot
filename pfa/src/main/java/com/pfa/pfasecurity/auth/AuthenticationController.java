@@ -155,9 +155,17 @@ public class AuthenticationController {
         List<Image> images = material.getImages();
         return ResponseEntity.ok(images);
     }
-    //delete material by id
+    //delete material by id (only disponible materials)
     @DeleteMapping("/materials/delete/{id}")
     public String deleteMaterial(@PathVariable int id) {
+        //check if material is disponible
+        Material material = materialRepository.findById(id).orElse(null);
+        if(material == null) {
+            return "Material not found";
+        }
+        if(!material.isDisponible()) {
+            return "Material is not disponible";
+        }
         materialRepository.deleteById(id);
         return "Material deleted";
     }
