@@ -23,7 +23,7 @@ public class Material {
     private String sku;
     private String titre;
     private String description;
-
+    
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "material_id",referencedColumnName = "id")
     private List<Image> images;
