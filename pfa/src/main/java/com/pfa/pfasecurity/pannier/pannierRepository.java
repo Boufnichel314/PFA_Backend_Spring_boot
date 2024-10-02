@@ -9,6 +9,7 @@ import com.pfa.pfasecurity.user.User;
 
 public interface pannierRepository extends JpaRepository<Pannier, Integer> {
 
-	public void deleteByUser(User user);    
+	public void deleteByUser(User user);
+	public List<Pannier> findByUser(User user);
 	
 }

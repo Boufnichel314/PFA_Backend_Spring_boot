@@ -41,7 +41,7 @@ public class PannierController {
                 System.out.println("no materials");
                 return null;
             }
-            List<Pannier> pannierList = pannierRepository.findAllByUser(user);
+            List<Pannier> pannierList = pannierRepository.findByUser(user);
             for (Pannier p : pannierList) {
                 if (p.getMaterials().contains(material.get())) {
                     return ResponseEntity.status(HttpStatus.CONFLICT).build();
