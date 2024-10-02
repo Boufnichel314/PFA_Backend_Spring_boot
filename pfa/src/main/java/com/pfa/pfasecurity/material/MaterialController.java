@@ -1,13 +1,13 @@
 package com.pfa.pfasecurity.material;
 
-import java.util.List;
+import java.util.*;
 
+import com.pfa.pfasecurity.reservation.Reservation;
+import com.pfa.pfasecurity.reservation.ReserveDto;
+import com.pfa.pfasecurity.user.User;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.pfa.pfasecurity.auth.AuthenticationService;
 import com.pfa.pfasecurity.pannier.pannierRepository;
@@ -20,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MaterialController {
 	private final MaterialRepo materialRepository;
+    private final UserRepository repository;
+    private final reservationRepository reservationRepository;
 	
 	@PostMapping("/AddMaterials")
     public ResponseEntity<String> AddMaterials(@RequestBody List<Material> materials){
@@ -60,13 +62,13 @@ public class MaterialController {
             }
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(new Date());
-            if(reserveDto.getDateRetour().before(calendar.getTime())){
+            if(reserveDto.getReturn_date().before(calendar.getTime())){
                 return ResponseEntity.badRequest().body("Invalid Date ");
             }
 
             Date dueDate = calendar.getTime();
             Reservation reservation = new Reservation();
-            reservation.setDueDate(reserveDto.getDateRetour());
+            reservation.setDueDate(reserveDto.getReturn_date());
             reservation.setReservationDate(new Date());
             reservation.setMaterial(material);
             reservation.setUser(user);
