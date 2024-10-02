@@ -32,12 +32,9 @@ public class ReservationController {
             User user = repository.findById(reservation.getUser().getId()).orElse(null);
             Material material = materialRepository.findById(reservation.getMaterial().getId()).orElse(null);
             ReservationDto reservationDto = new ReservationDto();
-            reservationDto.setId(reservation.getId());
-            reservationDto.setDueDate(reservation.getDueDate());
-            reservationDto.setReservationDate(reservation.getReservationDate());
-            reservationDto.setQuantity(reservation.getQuantity());
-            reservationDto.setUsername(user.getFirstname()+' '+user.getLastname());
-            reservationDto.setMaterial(material.getTitre());
+            reservationDto.setUser(user);
+            reservationDto.setMaterial(material);
+            reservationDto.setReservation(reservation);
             reservationDtos.add(reservationDto);
         }
         return ResponseEntity.ok(reservationDtos);
